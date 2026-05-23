@@ -22,7 +22,8 @@ jobs:
 
       #instalação do node
       - uses: actions/setup-node@v4
-        with: node-version:24.x
+        with:
+          node-version: 24.x
       #instalação do yarn
       - name: instalado Yarn
         run: npm install -g yarn
@@ -31,9 +32,9 @@ jobs:
         run: yarn
       # Instalando browser no playwritght
       - name: Instalando Browsers do PlayWritght
-        run: yarnn playwright install
+        run: yarn playwright install
 
       # Executar os testes e2e 
       - name: Executando testes ete
-        run: yarn run e3e
+        run: yarn run e2e
 
