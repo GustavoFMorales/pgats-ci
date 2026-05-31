@@ -9,4 +9,4 @@ e2e-tests:
     - yarn
     - yarn playwright install --with-deps
     - yarn run e2e
-  when: manual
+  when: manuald
