@@ -6,7 +6,6 @@ stages:
 e2e-tests:
   stage: test
   script:
-    - npm install -g yarn
     - yarn
     - yarn playwright install
     - yarn run e2e
