@@ -25,10 +25,11 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: 'started'
-          title: 'Pipeline iniciada'
-          description: 'A pipeline foi disparada por ${{ github.actor }}'
+          nofail: false
           nodetail: false
+          title: '▶️ Pipeline iniciada'
+          description: 'Disparada por **${{ github.actor }}**'
+          color: 0xf0a500
 
       #instalação do node
       - uses: actions/setup-node@v4
