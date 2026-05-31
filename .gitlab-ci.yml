@@ -1,23 +1,13 @@
 image: node:24
 
-cache:
-  paths:
-    - node_modules/
-
 stages:
-  - install
   - test
 
-instalar-dependencias:
-  stage: install
+e2e-tests:
+  stage: test
   script:
     - npm install -g yarn
     - yarn
     - yarn playwright install
-    - yarn playwright install-deps
-
-executar-testes-e2e:
-  stage: test
-  script:
     - yarn run e2e
   when: manual
