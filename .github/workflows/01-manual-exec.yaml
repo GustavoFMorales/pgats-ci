@@ -20,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Notificação de início no Discord
+      - name: Notificar início no Discord
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"content\": \"▶️ Pipeline **${{ github.workflow }}** iniciada por **${{ github.actor }}**.\nCommit: \`${{ github.sha }}\`\"}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
       #instalação do node
       - uses: actions/setup-node@v4
         with:
@@ -37,4 +44,20 @@ jobs:
       # Executar os testes e2e 
       - name: Executando testes e2e
         run: yarn run e2e
+
+      # Notificação de sucesso no Discord
+      - name: Notificar sucesso no Discord
+        if: success()
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"content\": \"✅ Pipeline **${{ github.workflow }}** finalizada com **sucesso**!\nCommit: \`${{ github.sha }}\`\"}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      # Notificação de falha no Discord
+      - name: Notificar falha no Discord
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"content\": \"❌ Pipeline **${{ github.workflow }}** **falhou**!\nCommit: \`${{ github.sha }}\`\nVeja o log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
 
