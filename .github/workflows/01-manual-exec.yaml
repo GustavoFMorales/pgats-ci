@@ -22,10 +22,13 @@ jobs:
 
       # Notificação de início no Discord
       - name: Notificar início no Discord
-        run: |
-          curl -H "Content-Type: application/json" \
-            -d "{\"content\": \"▶️ Pipeline **${{ github.workflow }}** iniciada por **${{ github.actor }}**.\nCommit: \`${{ github.sha }}\`\"}" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: 'started'
+          title: 'Pipeline iniciada'
+          description: 'A pipeline foi disparada por ${{ github.actor }}'
+          nodetail: false
 
       #instalação do node
       - uses: actions/setup-node@v4
@@ -48,16 +51,20 @@ jobs:
       # Notificação de sucesso no Discord
       - name: Notificar sucesso no Discord
         if: success()
-        run: |
-          curl -H "Content-Type: application/json" \
-            -d "{\"content\": \"✅ Pipeline **${{ github.workflow }}** finalizada com **sucesso**!\nCommit: \`${{ github.sha }}\`\"}" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: 'success'
+          title: 'Pipeline finalizada com sucesso ✅'
+          description: 'Todos os testes passaram!'
 
       # Notificação de falha no Discord
       - name: Notificar falha no Discord
         if: failure()
-        run: |
-          curl -H "Content-Type: application/json" \
-            -d "{\"content\": \"❌ Pipeline **${{ github.workflow }}** **falhou**!\nCommit: \`${{ github.sha }}\`\nVeja o log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: 'failure'
+          title: 'Pipeline falhou ❌'
+          description: 'Um ou mais passos falharam. Verifique o log.'
 
