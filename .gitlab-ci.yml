@@ -1,0 +1,28 @@
+# CI de nível 01 - Disparo manual através de clique
+
+# nomde da pipeline
+name: 'Execução manual'
+image: node:24
+
+cache: # Cache para acelerar a instalação das dependências
+  paths: # Caminho para o cache, nesse caso, a pasta node_modules
+    - node_modules/ # Cache para o cache do Playwright, onde ficam os browsers
+
+stages:
+  - install
+  - test
+
+workflow:
+  install_dependencies:
+    stage: install
+    script:
+      - npm install -g yarn # Instalação do Yarn
+      - yarn # Instalação das dependências
+      - yarn playwright install # Instalação dos browsers do Playwright
+
+  run_e2e_tests:
+    stage: test
+    script:
+      - yarn run e2e # Executar os testes e2e
+
+
