@@ -1,5 +1,6 @@
 node_modules
 .stryker-tmp
+actions-runner/
 reports
 /test-results/
 /playwright-report/
