@@ -25,13 +25,12 @@ jobs:
 
       # notificação de início no Discord
       - name: Notificar início no Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "iniciando"
-          title: "Pipeline Iniciada"
-          description: "A execução manual dos testes e2e foi iniciada."
-          color: 0xF0A500
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução manual dos testes e2e foi iniciada.","color":15770880}]}'
 
       # instalação do node
       - uses: actions/setup-node@v4 # versão 4 da ação de setup-node
