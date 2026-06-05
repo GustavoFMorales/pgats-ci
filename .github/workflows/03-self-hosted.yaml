@@ -22,6 +22,15 @@ jobs:
       # precisamos fazer o clone do repositório para ter acesso ao código
       - uses: actions/checkout@v4 # versão 4 da ação de checkout
 
+      # notificação de início no Discord
+      - name: Notificar início no Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução self-hosted dos testes e2e foi iniciada.","color":15770880}]}'
+
       # instalação do node
       - uses: actions/setup-node@v4 # versão 4 da ação de setup-node
         with:
@@ -42,3 +51,25 @@ jobs:
       # executar os testes e2e
       - name: Executando testes e2e
         run: yarn run e2e # comando para rodar os testes e2e definidos
+
+      # notificação de sucesso no Discord (só executa se tudo passou)
+      - name: Notificar sucesso no Discord
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "success"
+          title: "Pipeline Concluída com Sucesso"
+          description: "Todos os testes e2e passaram."
+          color: 0x28A745
+
+      # notificação de falha no Discord (só executa se algo falhou)
+      - name: Notificar falha no Discord
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "failure"
+          title: "Pipeline Falhou"
+          description: "Um ou mais testes e2e falharam."
+          color: 0xDC3545
