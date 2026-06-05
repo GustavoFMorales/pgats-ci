@@ -1,6 +1,6 @@
-# CI de Nível 01 - Disparo manual através de clique 
+# CI de Nível 01 - Disparo manual através de clique
 
-# nome da pipeline 
+# nome da pipeline
 name: 'Execução manual'
 
 # gatilhos / triggers - regras de disparos
@@ -12,7 +12,7 @@ on:
 
 # tarefas dentro da pipeline
 
-jobs: 
+jobs:
   # Precisamos definir a máquina onde o job vai rodar
   # nome do job
   e2e-tests:
@@ -22,24 +22,56 @@ jobs:
     steps:
       # precisamos fazer o clone do repositório para ter acesso ao código
       - uses: actions/checkout@v4 # versão 4 da ação de checkout
-      
+
+      # notificação de início no Discord
+      - name: Notificar início no Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "iniciando"
+          title: "Pipeline Iniciada"
+          description: "A execução manual dos testes e2e foi iniciada."
+          color: 0xF0A500
+
       # instalação do node
       - uses: actions/setup-node@v4 # versão 4 da ação de setup-node
         with:
           node-version: 24.x # versão do node que queremos usar
-      
+
       # instalação do yarn
       - name: Instalando Yarn
         run: npm install -g yarn # comando para instalar o yarn globalmente
-      
+
       # instalação das dependências
       - name: Instalando Dependências
         run: yarn # comando para instalar as dependências do projeto
-      
+
       # instalação dos browsers do Playwright
       - name: Instalando Browsers do Playwright
-        run: yarn playwright install # comando para instalar os browsers necessários para o Playwright 
-    
+        run: yarn playwright install # comando para instalar os browsers necessários para o Playwright
+
       # executar os testes e2e
       - name: Executando testes e2e
         run: yarn run e2e # comando para rodar os testes e2e definidos
+
+      # notificação de sucesso no Discord (só executa se tudo passou)
+      - name: Notificar sucesso no Discord
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "success"
+          title: "Pipeline Concluída com Sucesso"
+          description: "Todos os testes e2e passaram."
+          color: 0x28A745
+
+      # notificação de falha no Discord (só executa se algo falhou)
+      - name: Notificar falha no Discord
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "failure"
+          title: "Pipeline Falhou"
+          description: "Um ou mais testes e2e falharam."
+          color: 0xDC3545
