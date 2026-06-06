@@ -180,7 +180,7 @@ jobs:
           color: 0xDC3545
 
       - name: Salvando relatórios de teste
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{always()}}
         with:
           path: ./playwright-report # caminho onde o Playwright salva os relatórios
