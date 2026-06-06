@@ -9,6 +9,9 @@ name: 'Execução integrada'
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+       - master
 
 # tarefas dentro da pipeline
 
@@ -176,6 +179,12 @@ jobs:
           description: 'Um ou mais testes e2e falharam.'
           color: 0xDC3545
 
+      - name: Salvando relatórios de teste
+        uses: actions/upload-artifact@v3
+        if:  ${{always()}}
+        with:
+          path: ./playwright-report # caminho onde o Playwright salva os relatórios
+          name: Relatório de Testes e2e # nome do artefato para facilitar
   deploy:
     runs-on: ubuntu-latest
     needs: [unidade, e2e-tests] # só roda se unidade e e2e passarem
