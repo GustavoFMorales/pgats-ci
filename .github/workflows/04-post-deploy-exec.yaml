@@ -9,7 +9,7 @@ name: 'Execução por deploy'
 
 on:
   workflow_run:
-    workflows: ["Execução manual"] # nome da pipeline que queremos monitorar
+    workflows: ['Execução manual'] # nome da pipeline que queremos monitorar
     types:
       - completed # só dispara quando a pipeline for concluída
 
@@ -22,8 +22,8 @@ jobs:
     # máquina onde o job vai rodar
     runs-on: ubuntu-latest # latest quer dizer a versão mais recente
     # passos do job
-    if: ${{ github.event.workflow_run.conclusion == 'success' }} 
-    
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     steps:
       # precisamos fazer o clone do repositório para ter acesso ao código
       - uses: actions/checkout@v4 # versão 4 da ação de checkout
@@ -64,9 +64,9 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "success"
-          title: "Pipeline Concluída com Sucesso"
-          description: "Todos os testes e2e passaram."
+          status: 'success'
+          title: 'Pipeline Concluída com Sucesso'
+          description: 'Todos os testes e2e passaram.'
           color: 0x28A745
 
       # notificação de falha no Discord (só executa se algo falhou)
@@ -75,7 +75,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "failure"
-          title: "Pipeline Falhou"
-          description: "Um ou mais testes e2e falharam."
+          status: 'failure'
+          title: 'Pipeline Falhou'
+          description: 'Um ou mais testes e2e falharam.'
           color: 0xDC3545

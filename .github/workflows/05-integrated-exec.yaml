@@ -54,9 +54,9 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "success"
-          title: "Inspeção Concluída com Sucesso"
-          description: "A inspeção de código passou."
+          status: 'success'
+          title: 'Inspeção Concluída com Sucesso'
+          description: 'A inspeção de código passou.'
           color: 0x28A745
 
       # notificação de falha no Discord (só executa se algo falhou)
@@ -65,11 +65,10 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "failure"
-          title: "Inspeção Falhou"
-          description: "A inspeção de código falhou."
+          status: 'failure'
+          title: 'Inspeção Falhou'
+          description: 'A inspeção de código falhou.'
           color: 0xDC3545
-
 
   unidade:
     runs-on: ubuntu-latest
@@ -87,7 +86,6 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução da unidade foi iniciada.","color":15770880}]}'
 
-
       - uses: actions/setup-node@v4
         with:
           node-version: 24.x
@@ -100,15 +98,15 @@ jobs:
 
       - name: Executando testes unitários
         run: yarn run test
-     # notificação de sucesso no Discord (só executa se tudo passou)
+      # notificação de sucesso no Discord (só executa se tudo passou)
       - name: Notificar sucesso no Discord
         if: success()
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "success"
-          title: "Testes Unitários Concluídos com Sucesso"
-          description: "Todos os testes unitários passaram."
+          status: 'success'
+          title: 'Testes Unitários Concluídos com Sucesso'
+          description: 'Todos os testes unitários passaram.'
           color: 0x28A745
 
       # notificação de falha no Discord (só executa se algo falhou)
@@ -117,9 +115,9 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "failure"
-          title: "Testes Unitários Falharam"
-          description: "Um ou mais testes unitários falharam."
+          status: 'failure'
+          title: 'Testes Unitários Falharam'
+          description: 'Um ou mais testes unitários falharam.'
           color: 0xDC3545
 
   e2e-tests:
@@ -137,7 +135,6 @@ jobs:
           curl -s -X POST "$WEBHOOK" \
             -H "Content-Type: application/json" \
             -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução dos testes e2e foi iniciada.","color":15770880}]}'
-
 
       - uses: actions/setup-node@v4
         with:
@@ -163,9 +160,9 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "success"
-          title: "Testes e2e Concluídos com Sucesso"
-          description: "Todos os testes e2e passaram."
+          status: 'success'
+          title: 'Testes e2e Concluídos com Sucesso'
+          description: 'Todos os testes e2e passaram.'
           color: 0x28A745
 
       # notificação de falha no Discord (só executa se algo falhou)
@@ -174,11 +171,10 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: "failure"
-          title: "Testes e2e Falharam"
-          description: "Um ou mais testes e2e falharam."
+          status: 'failure'
+          title: 'Testes e2e Falharam'
+          description: 'Um ou mais testes e2e falharam.'
           color: 0xDC3545
-
 
   deploy:
     runs-on: ubuntu-latest
