@@ -53,6 +53,13 @@ jobs:
       - name: Executando testes e2e
         run: yarn run e2e # comando para rodar os testes e2e definidos
 
+      - name: Salvando relatórios de teste
+        uses: actions/upload-artifact@v4
+        if: ${{always()}}
+        with:
+          path: ./playwright-report # caminho onde o Playwright salva os relatórios
+          name: Relatório de Testes e2e # nome do artefato para facilitar
+
       # notificação de sucesso no Discord (só executa se tudo passou)
       - name: Notificar sucesso no Discord
         if: success()
