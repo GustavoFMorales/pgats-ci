@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-       - master
+      - master
 
 # tarefas dentro da pipeline
 
@@ -181,7 +181,7 @@ jobs:
 
       - name: Salvando relatórios de teste
         uses: actions/upload-artifact@v3
-        if:  ${{always()}}
+        if: ${{always()}}
         with:
           path: ./playwright-report # caminho onde o Playwright salva os relatórios
           name: Relatório de Testes e2e # nome do artefato para facilitar
