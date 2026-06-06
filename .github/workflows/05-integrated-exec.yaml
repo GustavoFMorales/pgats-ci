@@ -1,4 +1,4 @@
-# CI de Nível 01 - Disparo manual através de clique
+# CI de Nível 05 - Execução integrada
 
 # nome da pipeline
 name: 'Execução integrada'
@@ -13,15 +13,14 @@ on:
 # tarefas dentro da pipeline
 
 jobs:
-  # Precisamos definir a máquina onde o job vai rodar
   # nome do job
   inspecao:
     # máquina onde o job vai rodar
-    runs-on: ubuntu-latest # latest quer dizer a versão mais recente
+    runs-on: ubuntu-latest
     # passos do job
     steps:
       # precisamos fazer o clone do repositório para ter acesso ao código
-      - uses: actions/checkout@v4 # versão 4 da ação de checkout
+      - uses: actions/checkout@v4
 
       # notificação de início no Discord
       - name: Notificar início no Discord
@@ -30,23 +29,47 @@ jobs:
         run: |
           curl -s -X POST "$WEBHOOK" \
             -H "Content-Type: application/json" \
-            -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução manual dos testes e2e foi iniciada.","color":15770880}]}'
+            -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução integrada foi iniciada.","color":15770880}]}'
 
       # instalação do node
-      - uses: actions/setup-node@v4 # versão 4 da ação de setup-node
+      - uses: actions/setup-node@v4
         with:
-          node-version: latest # versão do node que queremos usar
+          node-version: 24.x
 
       # instalação do yarn
       - name: Instalando Yarn
-        run: npm install -g yarn # comando para instalar o yarn globalmente
+        run: npm install -g yarn
 
       # instalação das dependências
       - name: Instalando Dependências
-        run: yarn # comando para instalar as dependências do projeto
+        run: yarn
 
+      # inspeção de código
       - name: Inspeção de código
-        run: yarn lint # comando para rodar a inspeção de código (lint)
+        run: yarn lint
+
+      # notificação de sucesso no Discord (só executa se tudo passou)
+      - name: Notificar sucesso no Discord
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "success"
+          title: "Inspeção Concluída com Sucesso"
+          description: "A inspeção de código passou."
+          color: 0x28A745
+
+      # notificação de falha no Discord (só executa se algo falhou)
+      - name: Notificar falha no Discord
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "failure"
+          title: "Inspeção Falhou"
+          description: "A inspeção de código falhou."
+          color: 0xDC3545
+
 
   unidade:
     runs-on: ubuntu-latest
@@ -54,70 +77,113 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
+      # notificação de início no Discord
+      - name: Notificar início no Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução da unidade foi iniciada.","color":15770880}]}'
+
+
       - uses: actions/setup-node@v4
         with:
-          node-version: latest
-      
+          node-version: 24.x
+
       - name: Instalando Yarn
         run: npm install -g yarn
-      
+
       - name: Instalando Dependências
         run: yarn
-      
+
       - name: Executando testes unitários
         run: yarn run test
+     # notificação de sucesso no Discord (só executa se tudo passou)
+      - name: Notificar sucesso no Discord
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "success"
+          title: "Testes Unitários Concluídos com Sucesso"
+          description: "Todos os testes unitários passaram."
+          color: 0x28A745
+
+      # notificação de falha no Discord (só executa se algo falhou)
+      - name: Notificar falha no Discord
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: "failure"
+          title: "Testes Unitários Falharam"
+          description: "Um ou mais testes unitários falharam."
+          color: 0xDC3545
 
   e2e-tests:
     runs-on: ubuntu-latest
-    needs: [inspecao]
-    
-    steps:
-       - uses: actions/checkout@v4
+    needs: [inspecao] # esse job só roda se o job de inspeção passar
 
-       - uses: actions/setup-node@v4
-         with:
-          node-version: latest
-       
-       - name: Instalado Yarn
-         run: npm install -g yarn
-        
-       - name: Instalando Dependências
-         run: yarn
+    steps:
+      - uses: actions/checkout@v4
+
+      # notificação de início no Discord
+      - name: Notificar início no Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{"embeds":[{"title":"Pipeline Iniciada","description":"A execução dos testes e2e foi iniciada.","color":15770880}]}'
+
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      - name: Instalando Dependências
+        run: yarn
+
       # instalação dos browsers do Playwright
-       - name: Instalando Browsers do Playwright
-         run: yarn playwright install # comando para instalar os browsers necessários para o Playwright
+      - name: Instalando Browsers do Playwright
+        run: yarn playwright install
 
       # executar os testes e2e
-       - name: Executando testes e2e
-         run: yarn run e2e # comando para rodar os testes e2e definidos
+      - name: Executando testes e2e
+        run: yarn run e2e
 
       # notificação de sucesso no Discord (só executa se tudo passou)
-       - name: Notificar sucesso no Discord
-         if: success()
-         uses: sarisia/actions-status-discord@v1
-         with:
+      - name: Notificar sucesso no Discord
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           status: "success"
-          title: "Pipeline Concluída com Sucesso"
+          title: "Testes e2e Concluídos com Sucesso"
           description: "Todos os testes e2e passaram."
           color: 0x28A745
 
       # notificação de falha no Discord (só executa se algo falhou)
-       - name: Notificar falha no Discord
-         if: failure()
-         uses: sarisia/actions-status-discord@v1
-         with:
+      - name: Notificar falha no Discord
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           status: "failure"
-          title: "Pipeline Falhou"
+          title: "Testes e2e Falharam"
           description: "Um ou mais testes e2e falharam."
           color: 0xDC3545
 
+
   deploy:
     runs-on: ubuntu-latest
-    needs: [unidade, e2e-tests]
-    
+    needs: [unidade, e2e-tests] # só roda se unidade e e2e passarem
+
     steps:
       - name: Simulando deploy
         run: echo "Deploy realizado com sucesso!"
