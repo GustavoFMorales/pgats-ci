@@ -1,7 +1,7 @@
 # CI de Nível 01 - Disparo manual através de clique
 
 # nome da pipeline
-name: 'Execução agendada'
+name: 'Execução manual'
 
 # gatilhos / triggers - regras de disparos
 
@@ -9,7 +9,7 @@ name: 'Execução agendada'
 
 on:
   schedule:
-    - cron: '41 0 * * *' # Executa diariamente às 21:41 (horário de Brasília / 00:41 UTC)
+    - cron: '30 9 * * *' # Executa todos os dias às 09:30 (UTC)
 
 # tarefas dentro da pipeline
 
